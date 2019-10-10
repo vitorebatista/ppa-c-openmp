@@ -3,7 +3,7 @@
 
 CC = gcc
 CCFLAGS = -Wall -O3
-LDFLAGS = -pthread
+LDFLAGS = -fopenmp
 TARGET = main_omp gmat help
 
 all: $(TARGET)

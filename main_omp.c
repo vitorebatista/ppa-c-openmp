@@ -1,3 +1,4 @@
+#include <omp.h>
 #include "matriz-operacoes-omp.h"
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -16,7 +17,7 @@ int main(int argc, char *argv[]) {
     mymatriz mat_a, mat_b;
     mymatriz **mmult_MATRIZ_SeqC;
     mymatriz **mmult_MATRIZ_SeqBlC;
-    //mymatriz **mmult_MATRIZ_ThreadC;
+    mymatriz **mmult_MATRIZ_OMPC;
     //mymatriz **mmult_MATRIZ_ThreadBlC;
 
     char filename[100];
@@ -33,11 +34,12 @@ int main(int argc, char *argv[]) {
     int nro_submatrizes = 2;
 
     //For para executar calculo da média
-    //int ntasks = 2;
+    int n_threads = 2;
     int count_for = 10;
 
     double tempo_MATRIZ_SeqC = 0;
     double tempo_MATRIZ_SeqBlC = 0;
+    double tempo_MATRIZ_OMPC = 0;
     //double MATRIZ_ThreadC = 0;
     //double MATRIZ_ThreadBlC = 0;
     //double speedup_seqC;
@@ -155,20 +157,42 @@ int main(int argc, char *argv[]) {
 
 
 
-// %%%%%%%%%%%%%%%%%%%%%%%% BEGIN %%%%%%%%%%%%%%%%%%%%%%%%
+    // %%%%%%%%%%%%%%%%%%%%%%%% BEGIN %%%%%%%%%%%%%%%%%%%%%%%%
 
-// Multiplicação OMP
-/*
- LOOP (10x)
+    // Multiplicação OMP
+    mmult_MATRIZ_OMPC = (mymatriz **)malloc(sizeof(mymatriz *));
+    mmult_MATRIZ_OMPC[0] = malloc(sizeof(mymatriz));
+    mmult_MATRIZ_OMPC[0]->matriz = NULL;
+    mmult_MATRIZ_OMPC[0]->lin = mat_a.lin;
+    mmult_MATRIZ_OMPC[0]->col = mat_b.col;
 
-        MARCAR_TEMPO INICIO
+    //realiza a alocação de memória para matriz resultado
+    if (malocar(mmult_MATRIZ_OMPC[0]))
+    {
+        printf("ERROR: Out of memory\n");
+        exit(1);
+    }
+    else
+    {
+        mzerar(mmult_MATRIZ_OMPC[0]);
+    }
 
-	MATRIZ_OMPC = MULTIPLICAROMP MATRIZ_A x MATRIZ_B
-
-	MARCAR_TEMPO FIM
-
-	GRAVAR_DISCO MATRIZ_OMPC
-*/
+    for (int count = 0; count < count_for; count++)
+    {
+        printf("\rMultiplicação OMP, teste %d...             ", count+1);
+        fflush(stdout);
+        mzerar(mmult_MATRIZ_OMPC[0]);
+    
+        start_time = wtime();
+        multiplicarOMP(&mat_a, &mat_b, mmult_MATRIZ_OMPC[0], n_threads);
+        end_time = wtime();
+        tempo_MATRIZ_OMPC += end_time - start_time;
+        //printf("thread %d. tempo: %.20f\n",count, end_time - start_time);
+    }
+    sprintf(filename, "MATRIZ_OMPC.result");
+    fmat = fopen(filename, "w");
+    fileout_matriz(mmult_MATRIZ_OMPC[0], fmat);
+    fclose(fmat);
 // %%%%%%%%%%%%%%%%%%%%%%%% END %%%%%%%%%%%%%%%%%%%%%%%%
 
 
