@@ -16,8 +16,8 @@ int main(int argc, char *argv[]) {
     mymatriz mat_a, mat_b;
     mymatriz **mmult_MATRIZ_SeqC;
     mymatriz **mmult_MATRIZ_SeqBlC;
-    mymatriz **mmult_MATRIZ_ThreadC;
-    mymatriz **mmult_MATRIZ_ThreadBlC;
+    //mymatriz **mmult_MATRIZ_ThreadC;
+    //mymatriz **mmult_MATRIZ_ThreadBlC;
 
     char filename[100];
     FILE *fmat;
@@ -33,15 +33,15 @@ int main(int argc, char *argv[]) {
     int nro_submatrizes = 2;
 
     //For para executar calculo da média
-    int ntasks = 2;
+    //int ntasks = 2;
     int count_for = 10;
 
     double tempo_MATRIZ_SeqC = 0;
     double tempo_MATRIZ_SeqBlC = 0;
-    double MATRIZ_ThreadC = 0;
-    double MATRIZ_ThreadBlC = 0;
-    double speedup_seqC;
-    double speedup_BlC;
+    //double MATRIZ_ThreadC = 0;
+    //double MATRIZ_ThreadBlC = 0;
+    //double speedup_seqC;
+    //double speedup_BlC;
 
 
 // %%%%%%%%%%%%%%%%%%%%%%%% END %%%%%%%%%%%%%%%%%%%%%%%%
@@ -158,7 +158,7 @@ int main(int argc, char *argv[]) {
 // %%%%%%%%%%%%%%%%%%%%%%%% BEGIN %%%%%%%%%%%%%%%%%%%%%%%%
 
 // Multiplicação OMP
-
+/*
  LOOP (10x)
 
         MARCAR_TEMPO INICIO
@@ -168,7 +168,7 @@ int main(int argc, char *argv[]) {
 	MARCAR_TEMPO FIM
 
 	GRAVAR_DISCO MATRIZ_OMPC
-
+*/
 // %%%%%%%%%%%%%%%%%%%%%%%% END %%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -176,7 +176,7 @@ int main(int argc, char *argv[]) {
 // %%%%%%%%%%%%%%%%%%%%%%%% BEGIN %%%%%%%%%%%%%%%%%%%%%%%%
 
 // Multiplicação OMP em Bloco
-
+/*
 	N = mesmo nro de blocos da Sequencial
 
  LOOP (10x)
@@ -190,14 +190,36 @@ int main(int argc, char *argv[]) {
 	MARCAR_TEMPO FIM
 
 	GRAVAR_DISCO MATRIZ_OMPBlC
-
+*/
 // %%%%%%%%%%%%%%%%%%%%%%%% END %%%%%%%%%%%%%%%%%%%%%%%%
 
 // Comparar resultados e tempos
 
-        (print) COMPARAR MATRIZ_SeqC c/ MATRIZ_SeqBlC
+    // %%%%%%%%%%%%%%%%%%%%%%%% BEGIN %%%%%%%%%%%%%%%%%%%%%%%%
+    // Impressao dos resultados de tempo
+    printf("\n\tCOMPARAR MATRIZ_SeqC c/ MATRIZ_SeqBlC\n\t");
+    mcomparar(mmult_MATRIZ_SeqC[0], mmult_MATRIZ_SeqBlC[0]);
 
-        (print) COMPARAR MATRIZ_SeqC c/ MATRIZ_OMPC
+    printf("\n\tCOMPARAR MATRIZ_SeqC c/ MATRIZ_ThreadC\n\t");
+    //mcomparar(mmult_MATRIZ_SeqC[0], mmult_MATRIZ_ThreadC[0]);
+
+    printf("\n\tCOMPARAR MATRIZ_SeqC c/ MATRIZ_ThreadBlC\n\t");
+    //mcomparar(mmult_MATRIZ_SeqC[0], mmult_MATRIZ_ThreadBlC[0]);
+
+    printf("\n\t***** Tempo médio *****");
+    printf("\n\tSequencial (MATRIZ_SeqC):\t\t%.20f\n", tempo_MATRIZ_SeqC / count_for);
+    printf("\tEm bloco (MATRIZ_SeqBlC):\t\t%.20f\n", tempo_MATRIZ_SeqBlC / count_for);
+    //printf("\tThread (MATRIZ_ThreadC):\t\t%.20f\n", MATRIZ_ThreadC / count_for);
+    //printf("\tThread em bloco (MATRIZ_ThreadBlC):\t%.20f\n", MATRIZ_ThreadBlC / count_for);
+
+    //speedup_seqC = (tempo_MATRIZ_SeqC / count_for) / (MATRIZ_ThreadC / count_for);
+    //speedup_BlC = (tempo_MATRIZ_SeqBlC / count_for) / (MATRIZ_ThreadBlC / count_for);
+    //printf("\n\tSPEEDUP (MATRIZ_C): \t%.5f (%.2f %c)", speedup_seqC, speedup_seqC * 100, 37);
+    //printf("\n\tSPEEDUP (MATRIZ_BLC): \t%.5f (%.2f %c)\n\n", speedup_BlC, speedup_BlC * 100, 37);
+    // %%%%%%%%%%%%%%%%%%%%%%%% END %%%%%%%%%%%%%%%%%%%%%%%%
+
+/*
+    (print) COMPARAR MATRIZ_SeqC c/ MATRIZ_OMPC
 
 	(print) COMPARAR MATRIZ_SeqC c/ MATRIZ_OMPBlC
 
@@ -212,15 +234,36 @@ int main(int argc, char *argv[]) {
         (print) SPEEDUP (MATRIZ_C)
 
         (print) SPEEDUP (MATRIZ_BLC)
-
+*/
   // %%%%%%%%%%%%%%%%%%%%%%%% BEGIN %%%%%%%%%%%%%%%%%%%%%%%%
 
 // LIBERAR MEMÓRIA
-
+/*
 	LIBERAR MATRIZES
 
 	FECHAR ARQUIVOS
+*/
 
+    // %%%%%%%%%%%%%%%%%%%%%%%% BEGIN %%%%%%%%%%%%%%%%%%%%%%%%
+    //Liberação de memória
+    mliberar(mmult_MATRIZ_SeqC[0]);
+    mliberar(mmult_MATRIZ_SeqBlC[0]);
+    //mliberar(mmult_MATRIZ_ThreadC[0]);
+    //mliberar(mmult_MATRIZ_ThreadBlC[0]);
+
+    free(mmult_MATRIZ_SeqC[0]);
+    free(mmult_MATRIZ_SeqBlC[0]);
+    //free(mmult_MATRIZ_ThreadC[0]);
+    //free(mmult_MATRIZ_ThreadBlC[0]);
+
+    mliberar(&mat_a);
+    mliberar(&mat_b);
+
+    free(mmult_MATRIZ_SeqC);
+    free(mmult_MATRIZ_SeqBlC);
+    //free(mmult_MATRIZ_ThreadC);
+    //free(mmult_MATRIZ_ThreadBlC);
+    // %%%%%%%%%%%%%%%%%%%%%%%% END %%%%%%%%%%%%%%%%%%%%%%%%
 // %%%%%%%%%%%%%%%%%%%%%%%% END %%%%%%%%%%%%%%%%%%%%%%%%
 
 	return 0;
