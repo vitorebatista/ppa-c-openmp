@@ -1,7 +1,7 @@
 #include "matrizv3.h"
 #include "matriz-operacoesv3.h"
 
-int multiplicarOMP(mymatriz *mat_a, mymatriz *mat_b, mymatriz *mat_c, int tid, int ntasks)
+int multiplicarOMP(mymatriz *mat_a, mymatriz *mat_b, mymatriz *mat_c, int tid, int n_threads)
 {
     
     //inicializa variáveis de controle dos for`s
@@ -9,7 +9,7 @@ int multiplicarOMP(mymatriz *mat_a, mymatriz *mat_b, mymatriz *mat_c, int tid, i
     int j_max = mat_b->col;
     int k_max = mat_a->col;
 
-    for (int i = tid; i < i_max; i += ntasks){
+    for (int i = tid; i < i_max; i += n_threads){
         for (int k = 0; k < k_max; k++){
             for (int j = 0; j < j_max; j++){
                 mat_c->matriz[i][j] += mat_a->matriz[i][k] * mat_b->matriz[k][j];
