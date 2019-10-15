@@ -14,14 +14,14 @@ typedef struct
     matriz_bloco_t *mat_bloco_c;
 } param_t;
 
-void *exec_multi_thread(void *arg)
+void *exec_multi_omp(void *arg)
 {
     param_t *p = (param_t *)arg;
     multiplicarOMP(p->mat_a, p->mat_b, p->mat_c, p->tid, p->ntask);
     return NULL;
 }
 
-void *exec_multi_thread_blocos(void *arg)
+void *exec_multi_omp_blocos(void *arg)
 {
     param_t *p = (param_t *)arg;
     multiplicarOMPblocos(p->mat_bloco_a, p->mat_bloco_b, p->mat_bloco_c);
@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
 
     //variaveis para controle de threads
     param_t *args;
-    pthread_t *threads;
+    //pthread_t *threads;
 
     //variaveis para controle de tempo (runtime)
     double start_time, end_time;
@@ -205,7 +205,7 @@ int main(int argc, char *argv[])
         fflush(stdout);
 
         mzerar(mmult_MATRIZ_OMPC);
-        threads = (pthread_t *)malloc(n_threads * sizeof(pthread_t));
+        //threads = (pthread_t *)malloc(n_threads * sizeof(pthread_t));
         args = (param_t *)malloc(n_threads * sizeof(param_t));
         start_time = wtime();
 
@@ -222,7 +222,7 @@ int main(int argc, char *argv[])
             args[tid].mat_b = &mat_b;
             args[tid].mat_c = mmult_MATRIZ_OMPC;
             //printf("\n loop %d tid %d",count, tid);
-            exec_multi_thread((void *)(args + tid));
+            exec_multi_omp((void *)(args + tid));
         }
         end_time = wtime();
         tempo_MATRIZ_OMPC += end_time - start_time;
@@ -234,9 +234,6 @@ int main(int argc, char *argv[])
     fileout_matriz(mmult_MATRIZ_OMPC, fmat);
     fclose(fmat);
     // %%%%%%%%%%%%%%%%%%%%%%%% END %%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
 
     // %%%%%%%%%%%%%%%%%%%%%%%% BEGIN %%%%%%%%%%%%%%%%%%%%%%%%
     // Multiplicação MultiThreads em Bloco
@@ -251,29 +248,29 @@ int main(int argc, char *argv[])
         Vsubmat_b = particionar_matriz(mat_b.matriz, Lb, M, 0, nro_submatrizes);
         Vsubmat_c = csubmatrizv2(N, M, nro_submatrizes);
 
-        threads = (pthread_t *)malloc(n_threads * sizeof(pthread_t));
+        //threads = (pthread_t *)malloc(n_threads * sizeof(pthread_t));
         args = (param_t *)malloc(n_threads * sizeof(param_t));
         start_time = wtime();
-        for (int i = 0; i < n_threads; i++)
-        {
-            args[i].tid = i;
-            args[i].ntask = n_threads;
-            args[i].mat_bloco_a = Vsubmat_a[i];
-            args[i].mat_bloco_b = Vsubmat_b[i];
-            args[i].mat_bloco_c = Vsubmat_c[i];
-            pthread_create(&threads[i], NULL, exec_multi_thread_blocos, (void *)(args + i));
-        }
-
-        for (int i = 0; i < n_threads; i++)
-        {
-            pthread_join(threads[i], NULL);
-        }
+        #pragma omp parallel for num_threads(n_threads)
+            for (int i = 0; i < n_threads; i++)
+            {
+                args[i].tid = i;
+                args[i].ntask = n_threads;
+                args[i].mat_bloco_a = Vsubmat_a[i];
+                args[i].mat_bloco_b = Vsubmat_b[i];
+                args[i].mat_bloco_c = Vsubmat_c[i];
+                exec_multi_omp_blocos((void *)(args + i));
+            }
         
         //soma os blocos separados
-        mmult_MATRIZ_OMPBlC = msomar(Vsubmat_c[0]->matriz,Vsubmat_c[1]->matriz, 1);
-        for (int i = 2; i < nro_submatrizes; i++){
-            mmult_MATRIZ_OMPBlC = msomar(mmult_MATRIZ_OMPBlC,Vsubmat_c[i]->matriz, 1);	
-        }
+        //mmult_MATRIZ_OMPBlC = msomar(Vsubmat_c[0]->matriz,Vsubmat_c[1]->matriz, 1);
+        #pragma omp parallel for num_threads(n_threads)
+            for (int i = 1; i < n_threads; i++){
+                if(i==1)
+                    mmult_MATRIZ_OMPBlC = msomar(Vsubmat_c[0]->matriz,Vsubmat_c[1]->matriz, 1);
+                else
+                    mmult_MATRIZ_OMPBlC = msomar(mmult_MATRIZ_OMPBlC,Vsubmat_c[i]->matriz, 1);	
+            }
 
         end_time = wtime();
         tempo_MATRIZ_OMPBlC += end_time - start_time;
