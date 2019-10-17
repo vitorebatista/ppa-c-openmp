@@ -211,7 +211,7 @@ int main(int argc, char *argv[])
 
         int tid;
         int nthreads;
-        #pragma omp parallel num_threads(n_threads) 
+        //#pragma omp parallel num_threads(n_threads) 
         {
             tid = omp_get_thread_num();
             nthreads = omp_get_num_threads();
