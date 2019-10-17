@@ -52,10 +52,10 @@ int main(int argc, char *argv[])
     matriz_bloco_t **Vsubmat_a = NULL;
     matriz_bloco_t **Vsubmat_b = NULL;
     matriz_bloco_t **Vsubmat_c = NULL;
-    int nro_submatrizes = 2; //deve ser igual n_threads
-
+    
     //For para executar calculo da média
-    int n_threads = nro_submatrizes; //deve ser igual nro_submatrizes
+    int n_threads = 2;
+    int nro_submatrizes = n_threads;
     int count_for = 10; //numero de repeticoes para média de runtime
 
     //variaveis para controle de threads
@@ -264,12 +264,10 @@ int main(int argc, char *argv[])
         
         //soma os blocos separados
         //mmult_MATRIZ_OMPBlC = msomar(Vsubmat_c[0]->matriz,Vsubmat_c[1]->matriz, 1);
+        mmult_MATRIZ_OMPBlC = msomar(Vsubmat_c[0]->matriz,Vsubmat_c[1]->matriz, 1);
         #pragma omp parallel for num_threads(n_threads)
-            for (int i = 1; i < n_threads; i++){
-                if(i==1)
-                    mmult_MATRIZ_OMPBlC = msomar(Vsubmat_c[0]->matriz,Vsubmat_c[1]->matriz, 1);
-                else
-                    mmult_MATRIZ_OMPBlC = msomar(mmult_MATRIZ_OMPBlC,Vsubmat_c[i]->matriz, 1);	
+            for (int i = 2; i < n_threads; i++){
+                mmult_MATRIZ_OMPBlC = msomar(mmult_MATRIZ_OMPBlC,Vsubmat_c[i]->matriz, 1);	
             }
 
         end_time = wtime();
