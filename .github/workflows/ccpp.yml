@@ -1,0 +1,17 @@
+name: C/C++ CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v1
+    - name: make
+      run: make
+    - name: Create a matrix file
+      run: ./gmat 1000 1000
+    - name: Execute main omp
+      run: ./main_omp 1000x1000-mat.map 1000x1000-mat.map
