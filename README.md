@@ -1,6 +1,6 @@
-# Matriz Multithread
+# Matriz OMP
 
-Este programa em sua execução realiza operações básicas de multiplição de estruturas matriciais de quatro diferentes maneiras: sequencial, em blocos, multi-thread e multi-thread em blocos. 
+Este programa em sua execução realiza operações básicas de multiplição de estruturas matriciais de quatro diferentes maneiras: sequencial, em blocos, omp e omp em blocos. 
 
 Estão presentes nos códigos funções para alocação de memória, geração e preenchimento de todas as posições das matrizes, liberação da memória, etc.
 
@@ -16,30 +16,30 @@ Após execução deste comando os códigos serão compilados e gerados os execut
 
 Deve-se gerar os arquivos com as matrizes para realizar os testes:
 
-> ./gmat 500 500
+> ./gmat 1000 1000
 
 Em seguida chamar o programa principal que realizará os devidos testes e apresentará os resultados obtidos.
 
-> ./main_omp 500x500-mat.map 500x500-mat.map
+> ./main_omp 1000x1000-mat.map 1000x1000-mat.map
 
 Será apresentado no terminal um retorno semelhante a este:
 
 ```
+        
         COMPARAR MATRIZ_SeqC c/ MATRIZ_SeqBlC
         Matrizes são idênticas!! :) 
 
-        COMPARAR MATRIZ_SeqC c/ MATRIZ_ThreadC
+        COMPARAR MATRIZ_SeqC c/ MATRIZ_OMPC
         Matrizes são idênticas!! :) 
 
-        COMPARAR MATRIZ_SeqC c/ MATRIZ_ThreadBlC
+        COMPARAR MATRIZ_SeqC c/ MATRIZ_OMPBlC
         Matrizes são idênticas!! :) 
 
-        ***** Tempo médio *****
-        Sequencial (MATRIZ_SeqC):               0.09926869869232177179
-        Em bloco (MATRIZ_SeqBlC):               0.33803539276123045765
-        Thread (MATRIZ_ThreadC):                0.03931689262390136719
-        Thread em bloco (MATRIZ_ThreadBlC):     0.12550466060638426624
+        Tempo Médio MATRIZ_SeqC:        0.544214 sec 
+        Tempo Médio MATRIZ_SeqBlC:      2.725504 sec
+        Tempo Médio MATRIZ_OMPC:        0.478042 sec 
+        Tempo Médio MATRIZ_OMPBlC:      1.711702 sec 
 
-        SPEEDUP (MATRIZ_C):     2.52484 (252.48 %)
-        SPEEDUP (MATRIZ_BLC):   2.69341 (269.34 %)
+        SPEEDUP (MATRIZ_C):     1.138 (113.84 %)
+        SPEEDUP (MATRIZ_BLC):   1.592 (159.23 %)
 ```
