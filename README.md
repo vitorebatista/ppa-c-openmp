@@ -18,9 +18,9 @@ Deve-se gerar os arquivos com as matrizes para realizar os testes:
 
 > ./gmat 1000 1000
 
-Em seguida chamar o programa principal que realizará os devidos testes e apresentará os resultados obtidos.
+Em seguida chamar o programa principal que realizará os devidos testes e apresentará os resultados obtidos. Haverá três parâmetros, o primeiro e segundo serão do arquivo de matriz, o terceiro (opcional) será o número de threads a serem considerados.
 
-> ./main_omp 1000x1000-mat.map 1000x1000-mat.map
+> ./main_omp 1000x1000-mat.map 1000x1000-mat.map 4
 
 Será apresentado no terminal um retorno semelhante a este:
 

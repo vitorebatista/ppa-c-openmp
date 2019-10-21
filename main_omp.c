@@ -28,13 +28,9 @@ int main(int argc, char *argv[])
     matriz_bloco_t **Vsubmat_c = NULL;
     
     //For para executar calculo da média
-    int n_threads = 2;
+    int n_threads = 4;
     int nro_submatrizes = n_threads;
     int count_for = 10; //numero de repeticoes para média de runtime
-
-    //variaveis para controle de threads
-    //param_t *args;
-    //pthread_t *threads;
 
     //variaveis para controle de tempo (runtime)
     double start_time, end_time;
@@ -113,7 +109,6 @@ int main(int argc, char *argv[])
         mmult_MATRIZ_SeqC = mmultiplicar(&mat_a, &mat_b, 3);  //1=mais rápido (2.04), 5=mais lento (5.94)
         end_time = wtime();
         tempo_MATRIZ_SeqC += end_time - start_time;
-        //printf("sequencial %d. tempo: %.20f \t avg= %.20f\n",count, end_time - start_time, tempo_MATRIZ_SeqC / (count+1));
     }
     sprintf(filename, "MATRIZ_SeqC.result");
     fmat = fopen(filename, "w");
@@ -127,10 +122,11 @@ int main(int argc, char *argv[])
     mmult_MATRIZ_SeqBlC = (mymatriz *)malloc(sizeof(mymatriz));
     for (int count = 0; count < count_for; count++)
     {
+        start_time = wtime();
         printf("\rMultiplicação Sequencial em Bloco, teste %d...             ", count+1);
         fflush(stdout);
 
-        start_time = wtime();
+        Vsubmat_a = particionar_matriz(mat_a.matriz, N, La, 1, nro_submatrizes);
         Vsubmat_a = particionar_matriz(mat_a.matriz, N, La, 1, nro_submatrizes);
         Vsubmat_b = particionar_matriz(mat_b.matriz, Lb, M, 0, nro_submatrizes);
         Vsubmat_c = csubmatrizv2(N, M, nro_submatrizes);
@@ -142,13 +138,13 @@ int main(int argc, char *argv[])
 
         //soma os blocos separados
         mmult_MATRIZ_SeqBlC = msomar(Vsubmat_c[0]->matriz,Vsubmat_c[1]->matriz, 1);
+        mmult_MATRIZ_SeqBlC = msomar(Vsubmat_c[0]->matriz,Vsubmat_c[1]->matriz, 1);
         for (int i = 2; i < nro_submatrizes; i++){
             mmult_MATRIZ_SeqBlC = msomar(mmult_MATRIZ_SeqBlC,Vsubmat_c[i]->matriz, 1);	
         }
 
         end_time = wtime();
         tempo_MATRIZ_SeqBlC += end_time - start_time;
-        //printf("bloco %d. tempo: %.20f \t avg= %.20f\n",count, end_time - start_time, tempo_MATRIZ_SeqBlC / (count+1));
     }
     sprintf(filename, "MATRIZ_SeqBlC.result");
     fmat = fopen(filename, "w");
@@ -179,8 +175,6 @@ int main(int argc, char *argv[])
         fflush(stdout);
 
         mzerar(mmult_MATRIZ_OMPC);
-        //threads = (pthread_t *)malloc(n_threads * sizeof(pthread_t));
-        //args = (param_t *)malloc(n_threads * sizeof(param_t));
         start_time = wtime();
 
         int tid;
@@ -194,7 +188,6 @@ int main(int argc, char *argv[])
         }
         end_time = wtime();
         tempo_MATRIZ_OMPC += end_time - start_time;
-        //printf("sequencial thread %d. tempo: %.20f \t avg= %.20f\n",count, end_time - start_time, tempo_MATRIZ_OMPC / (count+1));
         
     }
     sprintf(filename, "MATRIZ_OMPC.result");
@@ -216,38 +209,30 @@ int main(int argc, char *argv[])
         Vsubmat_b = particionar_matriz(mat_b.matriz, Lb, M, 0, nro_submatrizes);
         Vsubmat_c = csubmatrizv2(N, M, nro_submatrizes);
 
-        //threads = (pthread_t *)malloc(n_threads * sizeof(pthread_t));
-        //args = (param_t *)malloc(n_threads * sizeof(param_t));
         start_time = wtime();
         int tid;
         //int nthreads;
-        #pragma omp parallel num_threads(n_threads)     
+        #pragma omp parallel num_threads(n_threads)   
         {
             tid = omp_get_thread_num();
             //nthreads = omp_get_num_threads();
             
             multiplicarOMPblocos(Vsubmat_a[tid], Vsubmat_b[tid], Vsubmat_c[tid]);
         }
-        
-        //soma os blocos separados
-        //mmult_MATRIZ_OMPBlC = msomar(Vsubmat_c[0]->matriz,Vsubmat_c[1]->matriz, 1);
+        end_time = wtime();
         mmult_MATRIZ_OMPBlC = msomar(Vsubmat_c[0]->matriz,Vsubmat_c[1]->matriz, 1);
         for (int i = 2; i < n_threads; i++){
             mmult_MATRIZ_OMPBlC = msomar(mmult_MATRIZ_OMPBlC,Vsubmat_c[i]->matriz, 1);	
         }
 
-        end_time = wtime();
+        
         tempo_MATRIZ_OMPBlC += end_time - start_time;
-        //printf("bloco thread %d. tempo: %.20f \t avg= %.20f\n",count, end_time - start_time, tempo_MATRIZ_OMPBlC / (count+1));
     }
     sprintf(filename, "MATRIZ_OMPBlC.result");
     fmat = fopen(filename, "w");
     fileout_matriz(mmult_MATRIZ_OMPBlC, fmat);
     fclose(fmat);
     // %%%%%%%%%%%%%%%%%%%%%%%% END %%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
 
     // %%%%%%%%%%%%%%%%%%%%%%%% BEGIN %%%%%%%%%%%%%%%%%%%%%%%%
     // Impressao dos resultados de tempo
@@ -267,13 +252,10 @@ int main(int argc, char *argv[])
 
     speedup_seqC = (tempo_MATRIZ_SeqC / count_for) / (tempo_MATRIZ_OMPC / count_for);
     speedup_BlC = (tempo_MATRIZ_SeqBlC / count_for) / (tempo_MATRIZ_OMPBlC / count_for);
-    printf("\n\tSPEEDUP (MATRIZ_C): \t%.5f (%.2f %c)", speedup_seqC, speedup_seqC*100, 37 );
-    printf("\n\tSPEEDUP (MATRIZ_BLC): \t%.5f (%.2f %c)\n\n", speedup_BlC, speedup_BlC*100, 37 );
+    printf("\n\tSPEEDUP (MATRIZ_C): \t%.3f (%.2f %c)", speedup_seqC, speedup_seqC*100, 37 );
+    printf("\n\tSPEEDUP (MATRIZ_BLC): \t%.3f (%.2f %c)\n\n", speedup_BlC, speedup_BlC*100, 37 );
 
     // %%%%%%%%%%%%%%%%%%%%%%%% END %%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
 
     // %%%%%%%%%%%%%%%%%%%%%%%% BEGIN %%%%%%%%%%%%%%%%%%%%%%%%
     //Liberação de memória

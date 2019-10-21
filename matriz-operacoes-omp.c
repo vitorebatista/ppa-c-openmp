@@ -11,7 +11,7 @@ int multiplicarOMP(mymatriz *mat_a, mymatriz *mat_b, mymatriz *mat_c, int tid, i
     
 //    #pragma omp parallel for private(n_threads) num_threads(n_threads) 
     //#pragma omp parallel for schedule(guided) private(i,j,k) shared(mat_a,mat_b,mat_c)
-    #pragma omp parallel for num_threads(n_threads) shared(mat_a,mat_b,mat_c)
+    #pragma omp parallel for schedule(guided) shared(mat_a,mat_b,mat_c)
         for (int i = tid; i < i_max; i += n_threads){
             for (int k = 0; k < k_max; k++){
                 for (int j = 0; j < j_max; j++){
@@ -33,7 +33,7 @@ int multiplicarOMPblocos(matriz_bloco_t *mat_suba, matriz_bloco_t *mat_subb, mat
         return (-1);
     }
 
-    #pragma omp parallel for num_threads(4) shared(mat_subc)
+    #pragma omp parallel for schedule(guided) shared(mat_suba,mat_subb,mat_subc)
         for (int i = mat_suba->bloco->lin_inicio; i < mat_suba->bloco->lin_fim; i++)
         {
             for (int j = mat_subb->bloco->col_inicio; j < mat_subb->bloco->col_fim; j++)
