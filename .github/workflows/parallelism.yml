@@ -1,4 +1,4 @@
-name: C/C++ CI
+name: Parallism
 
 on: [push]
     
@@ -11,7 +11,7 @@ jobs:
        - name: Execute ls -la
          run: ls -la
        - name: Check if README exist
-         run: sh -f README.md && echo "Found" || echo "Not found"
+         run: sh -f README.md
        - name: Check if Makefile exist
          run: sh -f Makefile.md && echo "Found" || echo "Not found"
           # Fontes da biblioteca (matriz, tools, matriz-operacoes)
