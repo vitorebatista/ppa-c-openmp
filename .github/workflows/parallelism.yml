@@ -12,7 +12,7 @@ jobs:
        - name: Execute ls -la
          run: ls -la
        - name: Check if README exist
-         run: sh -f README.md
+         run: sh -f README.md  && echo "Found" || echo "Not found"
        - name: Check if Makefile exist
          run: sh -f Makefile.md && echo "Found" || echo "Not found"
           # Fontes da biblioteca (matriz, tools, matriz-operacoes)
@@ -23,8 +23,10 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1
-    - name: make
-      run: make clean; make
+    - name: clean project
+      run: make clean
+    - name: compile the project
+      run: make
     
   matrix100:
     needs: [build]
