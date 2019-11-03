@@ -43,6 +43,8 @@ jobs:
       uses: actions/download-artifact@v1
       with:
         name: gmat-file
+    - name: Move file to root
+      run: mv gmat-file/gmat .
     - name: Create a 100x100 matrix file
       run: ./gmat 100 100
     - name: Upload map file for aspect2
@@ -61,8 +63,8 @@ jobs:
       uses: actions/download-artifact@v1
       with:
         name: gmat-file
-    - name: Check file
-      run: cd gmat-file && ls
+    - name: Move file to root
+      run: mv gmat-file/gmat .
     - name: Create a matrix file
       run: ./gmat 1000 1000
       
