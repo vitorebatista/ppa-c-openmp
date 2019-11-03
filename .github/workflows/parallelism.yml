@@ -36,6 +36,11 @@ jobs:
     steps:
     - name: Create a 100x100 matrix file
       run: ./gmat 100 100
+    - name: Upload map file for aspect2
+      uses: actions/upload-artifact@v1
+      with:
+          name: gmat100
+          path: 100x100-mat.map
 
   matrix1000:
     needs: [build]
@@ -53,6 +58,10 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1
+    - name: Download math result for job 1
+      uses: actions/download-artifact@v1
+      with:
+        name: gmat100
     - name: Create a matrix file
       run: main_omp 100x100-mat.map 100x100-mat.map 2
 
