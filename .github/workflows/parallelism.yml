@@ -1,0 +1,71 @@
+name: C/C++ CI
+
+on: [push]
+    
+jobs:
+ 
+  aspect1: 
+     runs-on: ubuntu-latest
+     name: Aspect 1 - Check for source and help files.
+     steps:
+       - name: Execute ls -la
+         run: ls -la
+       - name: Check if README exist
+         run: sh -f README.md && echo "Found" || echo "Not found"
+       - name: Check if Makefile exist
+         run: sh -f Makefile.md && echo "Found" || echo "Not found"
+          # Fontes da biblioteca (matriz, tools, matriz-operacoes)
+          # Fontes do programa principal (main_matriz.c e/ou main_matriz-bloco.c)
+  build:
+    name: Build project executing make command
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v1
+    - name: make
+      run: make clean; make
+    
+  matrix100:
+    needs: [build]
+    name: Create a 100x100 matrix 
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Create a 100x100 matrix file
+      run: ./gmat 100 100
+
+  matrix1000:
+    needs: [build]
+    name: Create a 1000x1000 matrix 
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Create a matrix file
+      run: ./gmat 1000 1000
+      
+  aspect2:
+    needs: [build, matrix100]
+    name: Execute main_omp with a 100x100 matrix
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Create a matrix file
+      run: main_omp 100x100-mat.map 100x100-mat.map 2
+
+  aspect3:
+    needs: [build, matrix1000]
+    name: Execute main_omp with a 1000x1000 matrix
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Execute main omp
+      run: ./main_omp 1000x1000-mat.map 1000x1000-mat.map 2
+
+  aspect4:
+    needs: [build, matrix1000]
+    name: Execute main_omp with a 1000x1000 matrix and check speedup
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Execute main omp
+      run: ./main_omp 1000x1000-mat.map 1000x1000-mat.map 4
