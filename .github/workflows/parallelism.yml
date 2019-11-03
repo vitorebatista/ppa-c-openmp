@@ -30,6 +30,7 @@ jobs:
     - name: Upload gmat-file
       uses: actions/upload-artifact@v1
       with:
+          name: gmat-file
           path: gmat
     
   matrix100:
@@ -60,6 +61,8 @@ jobs:
       uses: actions/download-artifact@v1
       with:
         name: gmat-file
+    - name: Check file
+      run: cd gmat-file && ls
     - name: Create a matrix file
       run: ./gmat 1000 1000
       
