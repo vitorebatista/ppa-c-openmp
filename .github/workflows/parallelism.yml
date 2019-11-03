@@ -27,6 +27,11 @@ jobs:
       run: make clean
     - name: compile the project
       run: make
+    - name: Upload gmat-file
+      uses: actions/upload-artifact@v1
+      with:
+          name: gmat-file
+          path: gmat
     
   matrix100:
     needs: [build]
@@ -62,6 +67,10 @@ jobs:
       uses: actions/download-artifact@v1
       with:
         name: gmat100
+    - name: Download math result for job 1
+      uses: actions/download-artifact@v1
+      with:
+        name: gmat-file
     - name: Create a matrix file
       run: main_omp 100x100-mat.map 100x100-mat.map 2
 
