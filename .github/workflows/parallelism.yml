@@ -39,6 +39,10 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+    - name: Download math result for job 1
+      uses: actions/download-artifact@v1
+      with:
+        name: gmat-file
     - name: Create a 100x100 matrix file
       run: ./gmat 100 100
     - name: Upload map file for aspect2
@@ -53,6 +57,10 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+    - name: Download math result for job 1
+      uses: actions/download-artifact@v1
+      with:
+        name: gmat-file
     - name: Create a matrix file
       run: ./gmat 1000 1000
       
@@ -67,10 +75,6 @@ jobs:
       uses: actions/download-artifact@v1
       with:
         name: gmat100
-    - name: Download math result for job 1
-      uses: actions/download-artifact@v1
-      with:
-        name: gmat-file
     - name: Create a matrix file
       run: main_omp 100x100-mat.map 100x100-mat.map 2
 
