@@ -72,7 +72,12 @@ jobs:
       run: sh -c "sudo chmod -R 777 ./gmat-folder"
     - name: Create a matrix file
       run: ./gmat-folder/gmat 1000 1000
-      
+    - name: Upload map file for aspect2
+      uses: actions/upload-artifact@v1
+      with:
+          name: gmat1000-folder
+          path: 1000x1000-mat.map
+
   aspect2:
     needs: [build, matrix100]
     name: Execute main_omp with a 100x100 matrix
