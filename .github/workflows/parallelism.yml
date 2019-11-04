@@ -43,6 +43,8 @@ jobs:
       uses: actions/download-artifact@v1
       with:
         name: gmat-file
+    - name: Change permission
+      run: sh -c "sudo chmod -R 777 ./gmat-file"
     - name: Create a 100x100 matrix file
       run: ./gmat-file/gmat 100 100
     - name: Upload map file for aspect2
