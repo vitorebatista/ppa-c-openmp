@@ -58,9 +58,9 @@ jobs:
           name: gmat1000-folder
           path: 1000x1000-mat.map
 
-  matrix2000:
+  matrix1500:
     needs: [build]
-    name: Create a 2000x2000 matrix 
+    name: Create a 1500x1500 matrix 
     runs-on: ubuntu-latest
     
     steps:
@@ -71,12 +71,12 @@ jobs:
     - name: Change gmat-folder permission
       run: sh -c "sudo chmod -R 777 ./gmat-folder"
     - name: Create a matrix file
-      run: ./gmat-folder/gmat 2000 2000
+      run: ./gmat-folder/gmat 1500 1500
     - name: Upload map file for aspect2
       uses: actions/upload-artifact@v1
       with:
-          name: gmat2000-folder
-          path: 2000x2000-mat.map
+          name: gmat1500-folder
+          path: 1500x1500-mat.map
 
   aspect2:
     needs: [build, matrix100]
@@ -101,17 +101,17 @@ jobs:
       run: ./main_omp-folder/main_omp ./gmat1000-folder/1000x1000-mat.map ./gmat1000-folder/1000x1000-mat.map 2
 
   aspect3:
-    needs: [build, matrix2000]
-    name: Execute main_omp with a 2000x2000 matrix
+    needs: [build, matrix1500]
+    name: Execute main_omp with a 1500x1500 matrix
     runs-on: ubuntu-latest
     
     steps:
     - uses: actions/checkout@v1
-    - name: Download gmat2000-folder
+    - name: Download gmat1500-folder
       uses: actions/download-artifact@v1
       with:
         name: gmat1000-folder
-    - name: Change gmat2000-folder permission
+    - name: Change gmat1500-folder permission
       run: sh -c "sudo chmod -R 777 ./gmat1000-folder"
     - name: Download math result for job 1
       uses: actions/download-artifact@v1
@@ -119,21 +119,21 @@ jobs:
         name: main_omp-folder
     - name: Change permission
       run: sh -c "sudo chmod -R 777 ./main_omp-folder"
-    - name: Execute main_omp with a 2000x2000 matrix
-      run: ./main_omp-folder/main_omp ./gmat2000-folder/2000x2000-mat.map ./gmat2000-folder/2000x2000-mat.map 2
+    - name: Execute main_omp with a 1500x1500 matrix
+      run: ./main_omp-folder/main_omp ./gmat1500-folder/1500x1500-mat.map ./gmat1500-folder/1500x1500-mat.map 2
 
   aspect4:
-    needs: [build, matrix2000]
-    name: Execute main_omp with a 2000x2000 matrix and check speedup
+    needs: [build, matrix1500]
+    name: Execute main_omp with a 1500x1500 matrix and check speedup
     runs-on: ubuntu-latest
     
     steps:
     - uses: actions/checkout@v1
-    - name: Download gmat1000-folder
+    - name: Download gmat1500-folder
       uses: actions/download-artifact@v1
       with:
-        name: gmat2000-folder
-    - name: Change gmat2000-folder permission
+        name: gmat1500-folder
+    - name: Change gmat1500-folder permission
       run: sh -c "sudo chmod -R 777 ./gmat1000-folder"
     - name: Download math result for job 1
       uses: actions/download-artifact@v1
@@ -141,5 +141,5 @@ jobs:
         name: main_omp-folder
     - name: Change permission
       run: sh -c "sudo chmod -R 777 ./main_omp-folder"
-    - name: Execute main_omp with a 2000x2000 matrix and 4 threads
-      run: ./main_omp-folder/main_omp ./gmat2000-folder/2000x2000-mat.map ./gmat2000-folder/2000x2000-mat.map 4
+    - name: Execute main_omp with a 1500x1500 matrix and 4 threads
+      run: ./main_omp-folder/main_omp ./gmat1500-folder/1500x1500-mat.map ./gmat1500-folder/1500x1500-mat.map 4
