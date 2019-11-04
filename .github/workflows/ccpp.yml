@@ -21,12 +21,12 @@ jobs:
     - name: compile the project
       run: make
     - name: Create a 100x100 matrix file
-      run: ./gmat 100 100
-    - name: Create a 1000x1000 matrix file
       run: ./gmat 1000 1000
-    - name: Execute main_omp with a 100x100 matrix
-      run: ./main_omp 100x100-mat.map 100x100-mat.map 2
-    - name: Execute main_omp with a 100x100 matrix
+    - name: Create a 1000x1000 matrix file
+      run: ./gmat 2000 2000
+    - name: Execute main_omp with a 1000x1000 matrix
       run: ./main_omp 1000x1000-mat.map 1000x1000-mat.map 2
-    - name: Execute main_omp with a 1000x1000 matrix and 4 threads
-      run: ./main_omp 1000x1000-mat.map 1000x1000-mat.map 4
+    - name: Execute main_omp with a 2000x2000 matrix
+      run: ./main_omp 2000x2000-mat.map 2000x2000-mat.map 2
+    - name: Execute main_omp with a 2000x2000 matrix and 4 threads
+      run: ./main_omp 2000x2000-mat.map 2000x2000-mat.map 4
