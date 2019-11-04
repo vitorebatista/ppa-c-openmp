@@ -38,9 +38,9 @@ jobs:
           name: main_omp-folder
           path: main_omp
     
-  matrix100:
+  matrix1000:
     needs: [build]
-    name: Create a 100x100 matrix 
+    name: Create a 1000x1000 matrix 
     runs-on: ubuntu-latest
     
     steps:
@@ -79,13 +79,13 @@ jobs:
           path: 1500x1500-mat.map
 
   aspect2:
-    needs: [build, matrix100]
-    name: Execute main_omp with a 100x100 matrix
+    needs: [build, matrix1000]
+    name: Execute main_omp with a 1000x1000 matrix
     runs-on: ubuntu-latest
     
     steps:
     - uses: actions/checkout@v1
-    - name: Download gmat100-folder
+    - name: Download gmat1000-folder
       uses: actions/download-artifact@v1
       with:
         name: gmat100-folder
@@ -110,9 +110,9 @@ jobs:
     - name: Download gmat1500-folder
       uses: actions/download-artifact@v1
       with:
-        name: gmat1000-folder
+        name: gmat1500-folder
     - name: Change gmat1500-folder permission
-      run: sh -c "sudo chmod -R 777 ./gmat1000-folder"
+      run: sh -c "sudo chmod -R 777 ./gmat1500-folder"
     - name: Download math result for job 1
       uses: actions/download-artifact@v1
       with:
