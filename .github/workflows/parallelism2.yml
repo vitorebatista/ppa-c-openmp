@@ -19,6 +19,19 @@ jobs:
           # Fontes do programa principal (main_matriz.c e/ou main_matriz-bloco.c)
 
   aspect2:
+    name: Execute main_omp with a 100x100 matrix
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v1
+    - name: compile the project
+      run: make
+    - name: Create a matrix file
+      run: ./gmat 100 100
+    - name: Execute main_omp with a 100x100 matrix
+      run: ./main_omp 100x100-mat.map 100x100-mat.map 2
+
+  aspect3:
     name: Execute main_omp with a 1000x1000 matrix
     runs-on: ubuntu-latest
     
@@ -31,21 +44,8 @@ jobs:
     - name: Execute main_omp with a 1000x1000 matrix
       run: ./main_omp 1000x1000-mat.map 1000x1000-mat.map 2
 
-  aspect3:
-    name: Execute main_omp with a 1500x1500 matrix
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v1
-    - name: compile the project
-      run: make
-    - name: Create a matrix file
-      run: ./gmat 1500 1500
-    - name: Execute main_omp with a 1500x1500 matrix
-      run: ./main_omp 1500x1500-mat.map 1500x1500-mat.map 2
-
   aspect4:
-    name: Execute main_omp with a 1500x1500 matrix and check speedup
+    name: Execute main_omp with a 1000x1000 matrix and check speedup
     runs-on: ubuntu-latest
     
     steps:
@@ -53,6 +53,6 @@ jobs:
     - name: compile the project
       run: make
     - name: Create a matrix file
-      run: ./gmat 1500 1500
+      run: ./gmat 1000 1000
     - name: Execute main_omp with a 1000x1000 matrix
-      run: ./main_omp 1500x1500-mat.map 1500x1500-mat.map 4
+      run: ./main_omp 1000x1000-mat.map 1000x1000-mat.map 4
