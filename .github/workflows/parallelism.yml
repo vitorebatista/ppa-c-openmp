@@ -64,11 +64,11 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Download math result for job 1
+    - name: Download gmat-folder
       uses: actions/download-artifact@v1
       with:
         name: gmat-folder
-    - name: Change permission
+    - name: Change gmat-folder permission
       run: sh -c "sudo chmod -R 777 ./gmat-folder"
     - name: Create a matrix file
       run: ./gmat-folder/gmat 1000 1000
@@ -80,7 +80,7 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1
-    - name: Download math result for job 1
+    - name: Download gmat100-folder
       uses: actions/download-artifact@v1
       with:
         name: gmat100-folder
@@ -102,8 +102,20 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1
-    - name: Execute main omp
-      run: ./main_omp 1000x1000-mat.map 1000x1000-mat.map 2
+    - name: Download gmat1000-folder
+      uses: actions/download-artifact@v1
+      with:
+        name: gmat1000-folder
+    - name: Change gmat1000-folder permission
+      run: sh -c "sudo chmod -R 777 ./gmat1000-folder"
+    - name: Download math result for job 1
+      uses: actions/download-artifact@v1
+      with:
+        name: main_omp-folder
+    - name: Change permission
+      run: sh -c "sudo chmod -R 777 ./main_omp-folder"
+    - name: Execute main_omp with a 1000x1000 matrix
+      run: ./main_omp-folder/main_omp ./gmat1000-folder/1000x1000-mat.map ./gmat1000-folder/1000x1000-mat.map 2
 
   aspect4:
     needs: [build, matrix1000]
@@ -112,5 +124,17 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1
-    - name: Execute main omp
-      run: ./main_omp 1000x1000-mat.map 1000x1000-mat.map 4
+    - name: Download gmat1000-folder
+      uses: actions/download-artifact@v1
+      with:
+        name: gmat1000-folder
+    - name: Change gmat1000-folder permission
+      run: sh -c "sudo chmod -R 777 ./gmat1000-folder"
+    - name: Download math result for job 1
+      uses: actions/download-artifact@v1
+      with:
+        name: main_omp-folder
+    - name: Change permission
+      run: sh -c "sudo chmod -R 777 ./main_omp-folder"
+    - name: Execute main_omp with a 1000x1000 matrix
+      run: ./main_omp-folder/main_omp ./gmat1000-folder/1000x1000-mat.map ./gmat1000-folder/1000x1000-mat.map 4
