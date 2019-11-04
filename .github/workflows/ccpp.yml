@@ -20,13 +20,13 @@ jobs:
       run: make clean
     - name: compile the project
       run: make
-    - name: Create a 100x100 matrix file
-      run: ./gmat 1000 1000
     - name: Create a 1000x1000 matrix file
-      run: ./gmat 2000 2000
+      run: ./gmat 1000 1000
+    - name: Create a 1500x1500 matrix file
+      run: ./gmat 1500 1500
     - name: Execute main_omp with a 1000x1000 matrix
       run: ./main_omp 1000x1000-mat.map 1000x1000-mat.map 2
-    - name: Execute main_omp with a 2000x2000 matrix
-      run: ./main_omp 2000x2000-mat.map 2000x2000-mat.map 2
+    - name: Execute main_omp with a 1500x1500 matrix
+      run: ./main_omp 1500x1500-mat.map 1500x1500-mat.map 2
     - name: Execute main_omp with a 2000x2000 matrix and 4 threads
-      run: ./main_omp 2000x2000-mat.map 2000x2000-mat.map 4
+      run: ./main_omp 1500x1500-mat.map 1500x1500-mat.map 4
