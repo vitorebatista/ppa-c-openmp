@@ -6,7 +6,7 @@ jobs:
  
   aspect1: 
      runs-on: ubuntu-latest
-     name: Aspect 1 - Check for source and help files.
+     name: Aspect1- Check for source and help files.
      steps:
        - uses: actions/checkout@v1
        - name: Execute ls -la
@@ -43,10 +43,8 @@ jobs:
       uses: actions/download-artifact@v1
       with:
         name: gmat-file
-    - name: Move file to root
-      run: mv gmat-file/gmat .
     - name: Create a 100x100 matrix file
-      run: ./gmat 100 100
+      run: ./gmat-file/gmat 100 100
     - name: Upload map file for aspect2
       uses: actions/upload-artifact@v1
       with:
@@ -63,10 +61,8 @@ jobs:
       uses: actions/download-artifact@v1
       with:
         name: gmat-file
-    - name: Move file to root
-      run: mv gmat-file/gmat .
     - name: Create a matrix file
-      run: ./gmat 1000 1000
+      run: ./gmat-file/gmat 1000 1000
       
   aspect2:
     needs: [build, matrix100]
