@@ -1,4 +1,4 @@
-name: Parallel Execution 
+name: Parallel Execution (files shared)
 
 on: [push]
     
