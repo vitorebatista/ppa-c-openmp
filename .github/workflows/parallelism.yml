@@ -1,4 +1,4 @@
-name: Parallelism
+name: Parallel Execution 
 
 on: [push]
     
