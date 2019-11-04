@@ -27,11 +27,16 @@ jobs:
       run: make clean
     - name: compile the project
       run: make
-    - name: Upload gmat-file
+    - name: Upload gmat-folder
       uses: actions/upload-artifact@v1
       with:
-          name: gmat-file
+          name: gmat-folder
           path: gmat
+    - name: Upload main_omp
+      uses: actions/upload-artifact@v1
+      with:
+          name: main_omp-folder
+          path: main_omp
     
   matrix100:
     needs: [build]
@@ -39,18 +44,18 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Download math result for job 1
+    - name: Download gmat-folder
       uses: actions/download-artifact@v1
       with:
-        name: gmat-file
+        name: gmat-folder
     - name: Change permission
-      run: sh -c "sudo chmod -R 777 ./gmat-file"
+      run: sh -c "sudo chmod -R 777 ./gmat-folder"
     - name: Create a 100x100 matrix file
-      run: ./gmat-file/gmat 100 100
+      run: ./gmat-folder/gmat 100 100
     - name: Upload map file for aspect2
       uses: actions/upload-artifact@v1
       with:
-          name: gmat100
+          name: gmat100-folder
           path: 100x100-mat.map
 
   matrix1000:
@@ -62,9 +67,11 @@ jobs:
     - name: Download math result for job 1
       uses: actions/download-artifact@v1
       with:
-        name: gmat-file
+        name: gmat-folder
+    - name: Change permission
+      run: sh -c "sudo chmod -R 777 ./gmat-folder"
     - name: Create a matrix file
-      run: ./gmat-file/gmat 1000 1000
+      run: ./gmat-folder/gmat 1000 1000
       
   aspect2:
     needs: [build, matrix100]
@@ -76,9 +83,17 @@ jobs:
     - name: Download math result for job 1
       uses: actions/download-artifact@v1
       with:
-        name: gmat100
-    - name: Create a matrix file
-      run: main_omp 100x100-mat.map 100x100-mat.map 2
+        name: gmat100-folder
+    - name: Change gmat100-folder permission
+      run: sh -c "sudo chmod -R 777 ./gmat100-folder"
+    - name: Download math result for job 1
+      uses: actions/download-artifact@v1
+      with:
+        name: main_omp-folder
+    - name: Change permission
+      run: sh -c "sudo chmod -R 777 ./main_omp-folder"
+    - name: Execute main_omp with a 100x100 matrix
+      run: ./main_omp-folder/main_omp ./gmat100-folder/100x100-mat.map ./gmat100-folder/100x100-mat.map 2
 
   aspect3:
     needs: [build, matrix1000]
