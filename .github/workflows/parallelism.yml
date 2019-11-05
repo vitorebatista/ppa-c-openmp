@@ -1,0 +1,145 @@
+name: Parallel Execution (files shared)
+
+on: [push]
+    
+jobs:
+ 
+  aspect1: 
+     runs-on: ubuntu-latest
+     name: Aspect1- Check for source and help files.
+     steps:
+       - uses: actions/checkout@v1
+       - name: Execute ls -la
+         run: ls -la
+       - name: Check if README exist
+         run: sh -f README.md  && echo "Found" || echo "Not found"
+       - name: Check if Makefile exist
+         run: sh -f Makefile.md && echo "Found" || echo "Not found"
+          # Fontes da biblioteca (matriz, tools, matriz-operacoes)
+          # Fontes do programa principal (main_matriz.c e/ou main_matriz-bloco.c)
+  build:
+    name: Build project executing make command
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v1
+    - name: clean project
+      run: make clean
+    - name: compile the project
+      run: make
+    - name: Upload gmat-folder
+      uses: actions/upload-artifact@v1
+      with:
+          name: gmat-folder
+          path: gmat
+    - name: Upload main_omp
+      uses: actions/upload-artifact@v1
+      with:
+          name: main_omp-folder
+          path: main_omp
+    
+  matrix200:
+    needs: [build]
+    name: Create a 200x200 matrix 
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Download gmat-folder
+      uses: actions/download-artifact@v1
+      with:
+        name: gmat-folder
+    - name: Change permission
+      run: sh -c "sudo chmod -R 777 ./gmat-folder"
+    - name: Create a 200x200 matrix file
+      run: ./gmat-folder/gmat 200 200
+    - name: Upload map file for aspect2
+      uses: actions/upload-artifact@v1
+      with:
+          name: gmat200-folder
+          path: 200x200-mat.map
+
+  matrix2000:
+    needs: [build]
+    name: Create a 2000x2000 matrix 
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Download gmat-folder
+      uses: actions/download-artifact@v1
+      with:
+        name: gmat-folder
+    - name: Change gmat-folder permission
+      run: sh -c "sudo chmod -R 777 ./gmat-folder"
+    - name: Create a matrix file
+      run: ./gmat-folder/gmat 2000 2000
+    - name: Upload map file for aspect2
+      uses: actions/upload-artifact@v1
+      with:
+          name: gmat2000-folder
+          path: 2000x2000-mat.map
+
+  aspect2:
+    needs: [build, matrix200]
+    name: Execute main_omp with a 200x200 matrix
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v1
+    - name: Download gmat200-folder
+      uses: actions/download-artifact@v1
+      with:
+        name: gmat200-folder
+    - name: Change gmat200-folder permission
+      run: sh -c "sudo chmod -R 777 ./gmat200-folder"
+    - name: Download math result for job 1
+      uses: actions/download-artifact@v1
+      with:
+        name: main_omp-folder
+    - name: Change permission
+      run: sh -c "sudo chmod -R 777 ./main_omp-folder"
+    - name: Execute main_omp with a 200x200 matrix
+      run: ./main_omp-folder/main_omp ./gmat200-folder/200x200-mat.map ./gmat200-folder/200x200-mat.map 2
+
+  aspect3:
+    needs: [build, matrix2000]
+    name: Execute main_omp with a 2000x2000 matrix
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v1
+    - name: Download gmat2000-folder
+      uses: actions/download-artifact@v1
+      with:
+        name: gmat2000-folder
+    - name: Change gmat2000-folder permission
+      run: sh -c "sudo chmod -R 777 ./gmat2000-folder"
+    - name: Download math result for job 1
+      uses: actions/download-artifact@v1
+      with:
+        name: main_omp-folder
+    - name: Change permission
+      run: sh -c "sudo chmod -R 777 ./main_omp-folder"
+    - name: Execute main_omp with a 2000x2000 matrix
+      run: ./main_omp-folder/main_omp ./gmat2000-folder/2000x2000-mat.map ./gmat2000-folder/2000x2000-mat.map 2
+
+  aspect4:
+    needs: [build, matrix2000]
+    name: Execute main_omp with a 2000x2000 matrix and check speedup
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v1
+    - name: Download gmat2000-folder
+      uses: actions/download-artifact@v1
+      with:
+        name: gmat2000-folder
+    - name: Change gmat2000-folder permission
+      run: sh -c "sudo chmod -R 777 ./gmat2000-folder"
+    - name: Download math result for job 1
+      uses: actions/download-artifact@v1
+      with:
+        name: main_omp-folder
+    - name: Change permission
+      run: sh -c "sudo chmod -R 777 ./main_omp-folder"
+    - name: Execute main_omp with a 2000x2000 matrix and 4 threads
+      run: ./main_omp-folder/main_omp ./gmat2000-folder/2000x2000-mat.map ./gmat2000-folder/2000x2000-mat.map 4
